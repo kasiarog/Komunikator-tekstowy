@@ -22,16 +22,14 @@ Projekt jest komunikatorem tekstowym działającym w terminalu systemu Linux, op
 ********Instrukcja kompilacji********
 
 Odpowiednio dla serwera i klienta (w osobnych oknach terminala):
-- gcc inf151846inf151879_s.c -Wall -o inf151846inf151879_s
-- gcc inf151846inf151879_k.c -Wall -o inf151846inf151879_k
-
-
+- gcc serwer.c -Wall -o serwer
+- gcc klient.c -Wall -o klient
 
 ********Instrukcja uruchomienia********
 
 Odpowiednio dla serwera i każdego klienta, jakiego chcemy zalogować (w osobnych oknach terminala):
-- ./inf151846inf151879_s
-- ./inf151846inf151879_k
+- ./serwer
+- ./klient
 
 
 
@@ -61,3 +59,49 @@ jest on ciągle aktywny, a więc wiadomości będą pojawiać się kiedy tylko z
 
 - Zawiera implementacje poszczególnych funkcji, wspomnianych wyżej (odpowiedzi na zapytania od klienta).
 - Przechowuje "bazę danych", czyli kilka dodatkowych struktur przechowywujących informacje o klientach i grupach potrzebne do przekazywania im odpowiednich wiadomości.
+
+
+********Struktura danych używana do przesyłania wiadomości:********
+
+struct zapytanie{
+    int id_nadawcy, id_adresata, polecenie, error;
+    char wiadomosc[DLUGOSC_WIADOMOSCI], nick[10];
+};
+
+
+********Pola struktury:********
+
+-- "polecenie", typu int - liczba całkowita oznaczająca rodzaj polecenia jakiego dotyczy zapytanie/odpowiedź.
+Konkretne numery odpowiadają konkretnym typom poleceń, dla przykładu:
+'3' - to przesłanie wiadomości,
+'7' - to wypisanie się z grupy.
+
+-- "id_nadawcy", typu int - pole w którym przesyłamy id kolejki nadawcy zapytania (klienta) podczas wysyłania polecenia do serwera.
+Używany aby zidentyfikować nadawcę wiadomości przez klienta, kiedy trafia do niego za pośrednictwem serwera.
+
+-- "id_adresata", typu int - pole słuzące do identyfikacji adresata wiadomości (użytkownika, grupy lub też serwera) przez serwer. W niektórych funkcjach jest używany jako bufor na inne, potrzebne dane.
+
+-- "wiadomosc", typu char[] - ciąg znaków, zwyczajowo przechowujący docelową wysyłaną treść wiadomości.
+
+-- "nick", typu char[] - zmienna przechowująca nick użytkownika przy logowaniu się na serwer.
+
+-- "error", typu int - zmienna, w której przekazujemy informacje o powodzeniu lub niepowodzeniu akcji.
+
+
+********Protokół wysyłania komunikatów********
+
+a) komunikacja Klient -> Serwer
+
+Serwer tworzy własną kolejkę komunikatów, z której będzie czytał wszystkie płynące do niego zapytania.
+Każdy klient wysyła swoje zapytania do jednej i tej samej kolejki serwera.
+
+
+b) komunikacja Serwer -> Klient
+
+Każdy Klient ma własną kolejkę komunikatów, której ID udostępnia serwerowi w procesie logowania.
+Serwer wysyła odpowiedzi na zapytania oraz przechwycone wiadomości do danego klienta poprzez tą osobistą kolejkę.
+
+
+c) Ilość kolejek wynosi n+1, gdzie n jest liczbą aktywnych klientów (a +1 odnosi się do kolejki serwera).
+
+
