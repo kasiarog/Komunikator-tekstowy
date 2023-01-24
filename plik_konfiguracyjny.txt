@@ -1,0 +1,24 @@
+maniek 1234
+baska 9943
+madzia 1138
+bolek 5101
+lolek 5642
+mateusz 9876
+wieniu 5793
+jadzia 2468
+witek 9970
+2 4 hobbysci
+maniek
+bolek
+mateusz
+witek
+3 3 dziewczyny
+baska
+madzia
+jadzia
+4 5 poznaniacy
+baska
+bolek
+lolek
+wieniu
+jadzia
