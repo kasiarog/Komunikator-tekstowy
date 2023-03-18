@@ -1,4 +1,4 @@
-# Komunikator-tekstowy-projekt-PSiW-
+# Komunikator tekstowy - projekt z przedmiotu Programowanie Systemowe i Wsółbieżne
 Komunikator tekstowy obsługiwany w terminalu Linuxa, pisany w C
 
 ********Funkcjonalność programu********
