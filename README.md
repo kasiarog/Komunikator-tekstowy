@@ -33,7 +33,7 @@ Odpowiednio dla serwera i każdego klienta, jakiego chcemy zalogować (w osobnyc
 
 
 
-********Krótki opis zawartości poszczególnych plików *.c********
+********Krótki opis zawartości poszczególnych plików ********
 
 ---PLik klienta:
 
@@ -59,6 +59,11 @@ jest on ciągle aktywny, a więc wiadomości będą pojawiać się kiedy tylko z
 
 - Zawiera implementacje poszczególnych funkcji, wspomnianych wyżej (odpowiedzi na zapytania od klienta).
 - Przechowuje "bazę danych", czyli kilka dodatkowych struktur przechowywujących informacje o klientach i grupach potrzebne do przekazywania im odpowiednich wiadomości.
+
+
+---Plik konfiguracyjny:
+
+- Zawiera domyślną bazę użytkowników oraz grup użytkowników.
 
 
 ********Struktura danych używana do przesyłania wiadomości:********
