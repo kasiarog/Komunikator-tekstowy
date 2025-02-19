@@ -1,72 +1,72 @@
-# Komunikator tekstowy - projekt z przedmiotu Programowanie Systemowe i Wsółbieżne
-Komunikator tekstowy obsługiwany w terminalu Linuxa, pisany w języku C
+# Text Messenger - Project for System and Concurrent Programming
+A text messenger operated in the Linux terminal, written in C
 
-********Funkcjonalność programu********
+********Program Functionality********
 
-Projekt jest komunikatorem tekstowym działającym w terminalu systemu Linux, opierającym się na mechanizmach IPC. Główną rolę pełniły tutaj kolejki komunikatów, którymi to przesyłane są wszystkie informacje między klientem a serwerem. Komunikator obsługuje użytkownika na jego osobistym koncie, umożliwiając mu:
- - rejestrację
- - logowanie się
- - wylogowywanie się
- - wysyłanie wiadomości do innego użytkownika
- - wysyłanie wiadomości do grupy użytkowników do której jest zapisany
- - podgląd zalogowanych użytkowników
- - podgląd dostępnych grup tematycznych
- - podgląd członków danej grupy
- - zapisanie się do grupy
- - wypisanie się z grupy
- - sprawdzenie wiadomości
- - blokowanie innego użytkownika (tak, aby nie otrzymywać od niego wiadomości)
+The project is a text messenger operating in the Linux terminal, based on IPC mechanisms. The primary role is played by message queues, which are used to transmit all information between the client and the server. The messenger allows a user to operate on their personal account, enabling them to:
+ - Register
+ - Log in
+ - Log out
+ - Send messages to another user
+ - Send messages to a group of users they are subscribed to
+ - View logged-in users
+ - View available topic-based groups
+ - View members of a group
+ - Join a group
+ - Leave a group
+ - Check messages
+ - Block another user (to stop receiving messages from them)
 
 
 
-********Instrukcja kompilacji********
+********Compilation instructions********
 
-Odpowiednio dla serwera i klienta (w osobnych oknach terminala):
+For both the server and the client (in separate terminal windows):
 - gcc serwer.c -Wall -o serwer
 - gcc klient.c -Wall -o klient
 
-********Instrukcja uruchomienia********
+********Execution instructions********
 
-Odpowiednio dla serwera i każdego klienta, jakiego chcemy zalogować (w osobnych oknach terminala):
+For both the server and each client who wants to log in (in separate terminal windows):
 - ./serwer
 - ./klient
 
 
 
-********Krótki opis zawartości poszczególnych plików ********
+********Brief Description of File Contents********
 
----PLik klienta:
+---Client file:
 
-- Dzieli się na dwa główne procesy:
+- It is divided into two main processes:
   
-   *pierwszy:
-	- zawiera dwie główne pętle: pierwsza pętla "niezalogowany" - jest to interfejs pojawiający się kiedy użytkownik nie jest zalogowany i pozwala:
-	   > zalogować się
-	   > zarejestrować (stworzyć konto)
-	   > zamknąć aplikację
-	druga pętla "zalogowany" - jest to interfejs dający dostęp do głównych funkcji serwera, jednak dostępny dopiero po zalogowaniu się w poprzednim, wyżej wspomnianym etapie programu. Zawiera funkcje pozwalające:
-	   > wysłać wiadomość do innego użytkownika, lub do całej grupy;
-	   > sprawdzić kto jest zalogowany, dostępne grupy, a także ich skład;
-	   > zapisać, lub wypisać się z grupy;
-	   > wylogowanie się i wyjście (wyłączenie) programu (zamykając za sobą odpowiednią kolejkę).
+   *first process:
+  	- Contains two main loops:
+  	The first loop, "not logged in," is an interface that appears when the user is not logged in, allowing them to:
+	   > Log in 
+	   > Register
+	   > Close the application
+	The second loop, "logged in," grants access to the server’s main functions, but only after logging in during the previous stage of the program. It includes functions that allow the user to:
+	   > Send a message to another user or an entire group
+	   > Check who is logged in, available groups and their members
+	   > Join or leave a group
+	   > Log out and exit the program (closing the appropriate queue)
 
-   *drugi:
-	- Proces ten jest odpowiedzialny za przechwytywanie nadciągających wiadomości i wypisywanie ich na ekranie,
-jest on ciągle aktywny, a więc wiadomości będą pojawiać się kiedy tylko zostaną przechwycone.
-
-
----Plik serwera:
-
-- Zawiera implementacje poszczególnych funkcji, wspomnianych wyżej (odpowiedzi na zapytania od klienta).
-- Przechowuje "bazę danych", czyli kilka dodatkowych struktur przechowywujących informacje o klientach i grupach potrzebne do przekazywania im odpowiednich wiadomości.
+   *second process:
+	- Responsible for capturing incoming messages and displaying them on the screen. It is always active, meaning messages appear as soon as they are received.
 
 
----Plik konfiguracyjny:
+---Server file:
 
-- Zawiera domyślną bazę użytkowników oraz grup użytkowników.
+- Implements the various functions mentioned above (responding to client requests).
+- Maintains a "database," which consists of additional structures storing information about clients and groups necessary for directing messages appropriately.
 
 
-********Struktura danych używana do przesyłania wiadomości:********
+---Configuration file:
+
+- Contains the default user database and user groups.
+
+
+********Data Structure Used for Message Transition********
 
 struct zapytanie{
     int id_nadawcy, id_adresata, polecenie, error;
@@ -74,39 +74,39 @@ struct zapytanie{
 };
 
 
-********Pola struktury:********
+********Structure fields********
 
--- "polecenie", typu int - liczba całkowita oznaczająca rodzaj polecenia jakiego dotyczy zapytanie/odpowiedź.
-Konkretne numery odpowiadają konkretnym typom poleceń, dla przykładu:
-'3' - to przesłanie wiadomości,
-'7' - to wypisanie się z grupy.
+-- "polecenie" (int) - An integer indicating the type of request/respon
+Specific numbers correspond to specific commands, e.g.:
+'3' - Sending a message,
+'7' - Leaving a group.
 
--- "id_nadawcy", typu int - pole w którym przesyłamy id kolejki nadawcy zapytania (klienta) podczas wysyłania polecenia do serwera.
-Używany aby zidentyfikować nadawcę wiadomości przez klienta, kiedy trafia do niego za pośrednictwem serwera.
+-- "id_nadawcy", (int) - The ID of the sender's queue when sending a request to the server.
+Used to identify the sender when the message reaches them via the server.
 
--- "id_adresata", typu int - pole słuzące do identyfikacji adresata wiadomości (użytkownika, grupy lub też serwera) przez serwer. W niektórych funkcjach jest używany jako bufor na inne, potrzebne dane.
+-- "id_adresata", (int) - Used to identify the recipient of the message (user, group, or server). In some functions, it is used as a buffer for other required data.
 
--- "wiadomosc", typu char[] - ciąg znaków, zwyczajowo przechowujący docelową wysyłaną treść wiadomości.
+-- "wiadomosc", (char[]) -  A character array storing the actual message content.
 
--- "nick", typu char[] - zmienna przechowująca nick użytkownika przy logowaniu się na serwer.
+-- "nick", (char[]) - A variable storing the user's nickname when logging into the server.
 
--- "error", typu int - zmienna, w której przekazujemy informacje o powodzeniu lub niepowodzeniu akcji.
-
-
-********Protokół wysyłania komunikatów********
-
-a) komunikacja Klient -> Serwer
-
-Serwer tworzy własną kolejkę komunikatów, z której będzie czytał wszystkie płynące do niego zapytania.
-Każdy klient wysyła swoje zapytania do jednej i tej samej kolejki serwera.
+-- "error", (int) - A variable used to convey information about the success or failure of an action.
 
 
-b) komunikacja Serwer -> Klient
+********Message Transmission Protocol********
 
-Każdy Klient ma własną kolejkę komunikatów, której ID udostępnia serwerowi w procesie logowania.
-Serwer wysyła odpowiedzi na zapytania oraz przechwycone wiadomości do danego klienta poprzez tą osobistą kolejkę.
+a) Client -> Server communication
+
+The server creates its own message queue, from which it reads all incoming requests.
+Each client sends their requests to the single server queue.
 
 
-c) Ilość kolejek wynosi n+1, gdzie n jest liczbą aktywnych klientów (a +1 odnosi się do kolejki serwera).
+b) Server -> Client communication
+
+Each client has its own message queue, whose ID is provided to the server during the login process.
+The server sends responses to requests and relayed messages to the client via this personal queue.
+
+
+c) The total number of queues is n+1, where n is the number of active clients (the additional +1 refers to the server queue).
 
 
